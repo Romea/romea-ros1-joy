@@ -1,0 +1,24 @@
+buttons:
+  A: 0
+  B: 1
+  X: 2
+  Y: 3
+  LB: 4
+  RB: 5
+  back: 6
+  start: 7
+  power: 8
+  LSB: 9 #Left Stick Button
+  RSB: 10 #Right Stick Button
+axes:
+  directional_pads:
+    HDPAD: 6 # Horizontal Directional Pad
+    VDPAD: 7 # Vertical Directional Pad
+  sticks:
+    HLS: 0 # Horizontal Left thumb Stick
+    VLS: 1 # Vertical Left thumb Stick
+    HRS: 2 # Horizontal Right thumb Stick
+    VRS: 3 # Vertical Right thumb Stick
+  triggers:
+    RT: 4
+    LT: 5

@@ -1,0 +1,9 @@
+<launch>
+
+  <test test-name="mapping_test"
+        pkg="romea_joy"
+        type="romea_joy_mapping_test">
+      <rosparam command="load" file="$(find romea_joy)/config/xbox_mapping.yaml" />
+  </test>
+
+</launch>
