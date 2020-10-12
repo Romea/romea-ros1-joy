@@ -29,7 +29,7 @@ public :
   Joystick(ros::NodeHandle & nh,
            ros::NodeHandle & joy_nh,
            const std::map<std::string,std::string> & name_remappings,
-           bool use_only_remapped=0);
+           bool use_only_remapped);
 
   void registerOnReceivedMsgCallback(OnReceivedMsgCallback && callback);
 

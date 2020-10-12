@@ -8,17 +8,17 @@ buttons:
   back: 6
   start: 7
   power: 8
-  LSB: 9 #Left Stick Button
-  RSB: 10 #Right Stick Button
+  Left_Stick_Button: 9
+  Right_Stick_Button: 10
 axes:
   directional_pads:
-    HDPAD: 6 # Horizontal Directional Pad
-    VDPAD: 7 # Vertical Directional Pad
+    Horizontal_Directional_Pad: 6
+    Vertical_Directional_Pad: 7
   sticks:
-    HLS: 0 # Horizontal Left thumb Stick
-    VLS: 1 # Vertical Left thumb Stick
-    HRS: 2 # Horizontal Right thumb Stick
-    VRS: 3 # Vertical Right thumb Stick
+    Horizontal_Left_Stick: 0
+    Vertical_Left_Stick: 1
+    Horizontal_Right_Stick: 3
+    Vertical_Right_Stick: 4
   triggers:
-    RT: 4
-    LT: 5
+    LT: 2
+    RT: 5
