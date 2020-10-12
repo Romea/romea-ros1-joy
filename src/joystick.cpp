@@ -3,6 +3,31 @@
 #include "romea_joy/joystick_trigger.hpp"
 #include "romea_joy/joystick_directional_pad.hpp"
 #include "romea_joy/joystick_mapping.hpp"
+#include <romea_common_utils/params/RosParam.hpp>
+
+namespace romea
+{
+  JoystickStick::Config loadSticksConfiguration(ros::NodeHandle nh, const std::string paramName)
+  {
+    std::vector<double> interval =loadVector<double>(nh,paramName);
+    if(interval.size()!=2)
+    {
+      throw(std::runtime_error("Unable load sticks configuration from ros parameter " + paramName));
+    }
+    return {interval[0],interval[1]};
+  }
+
+  JoystickTrigger::Config loadTriggersConfiguration(ros::NodeHandle nh, const std::string paramName)
+  {
+    std::vector<double> interval =loadVector<double>(nh,paramName);
+    if(interval.size()!=2)
+    {
+      throw(std::runtime_error("Unable load triggers configuration from ros parameter " + paramName));
+    }
+    return {interval[0],interval[1]};
+  }
+
+}
 
 namespace romea
 {
@@ -25,15 +50,34 @@ Joystick::Joystick(ros::NodeHandle & nh,
                    bool use_only_remapped):
   joy_sub_(),
   buttons_(),
-  axes_()
+  axes_(),
+  sticks_configuration_(),
+  triggers_configuration_()
 {
+  double deadzone = loadParam<double>(joy_nh,"deadzone");
+  sticks_configuration_=loadSticksConfiguration(joy_nh,"scale/sticks");
+  triggers_configuration_=loadTriggersConfiguration(joy_nh,"scale/triggers");
+
   JoystickMapping joystick_mapping(joy_nh,name_remappings,use_only_remapped);
   addButtons_(joystick_mapping.get("buttons"));
   addDirectionalPads_(joystick_mapping.get("axes/directional_pads"));
-  addSticks_(joystick_mapping.get("axes/sticks"),0.05);
-  addTriggers_(joystick_mapping.get("axes/triggers"));
+  addSticks_(joystick_mapping.get("axes/sticks"),deadzone);
+  addTriggers_(joystick_mapping.get("axes/triggers"),
+               triggers_configuration_.unpressed_value);
 
   joy_sub_=nh.subscribe<sensor_msgs::Joy>("joy", 1, &Joystick::processJoyMsg_,this);
+}
+
+//-----------------------------------------------------------------------------
+const JoystickStick::Config & Joystick::getSticksConfiguration()const
+{
+  return sticks_configuration_;
+}
+
+//-----------------------------------------------------------------------------
+const JoystickTrigger::Config & Joystick::getTriggersConfiguration()const
+{
+  return triggers_configuration_;
 }
 
 //-----------------------------------------------------------------------------
@@ -108,11 +152,12 @@ void Joystick::addSticks_(const std::map<std::string,int> & id_mappings,
 
 }
 //-----------------------------------------------------------------------------
-void Joystick::addTriggers_(const std::map<std::string, int> &id_mappings)
+void Joystick::addTriggers_(const std::map<std::string, int> &id_mappings,
+                            const double & unpressed_value)
 {
   for(const auto & p : id_mappings)
   {
-    axes_[p.first]=std::make_unique<JoystickTrigger>(p.second);
+    axes_[p.first]=std::make_unique<JoystickTrigger>(p.second,unpressed_value);
   }
 }
 

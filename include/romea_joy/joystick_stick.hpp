@@ -8,6 +8,14 @@ namespace romea {
 class JoystickStick : public JoystickAxis
 {
 
+public:
+
+  struct Config
+  {
+    double left_or_down_value;
+    double right_or_up_value;
+  };
+
 public :
 
   JoystickStick(const int & axis_id,

@@ -5,18 +5,29 @@
 
 namespace romea {
 
+
 class JoystickTrigger : public JoystickAxis
 {
 
 public :
 
-  JoystickTrigger(const int &axis_id);
+  struct Config
+  {
+    double unpressed_value;
+    double pressed_value;
+  };
+
+public :
+
+  JoystickTrigger(const int &axis_id,
+                  const double & unpressed_value);
 
   void update(const sensor_msgs::Joy & joy_msg)override;
 
 private :
 
   double has_been_pressed_;
+  double unpressed_value_;
 
 };
 

@@ -3,7 +3,7 @@
   <test test-name="remapping_test"
         pkg="romea_joy"
         type="romea_joy_remapping_test">
-      <rosparam command="load" file="$(find romea_joy)/config/xbox_mapping.yaml" />
+      <rosparam command="load" file="$(find romea_joy)/config/xbox.yaml" />
   </test>
 
 </launch>

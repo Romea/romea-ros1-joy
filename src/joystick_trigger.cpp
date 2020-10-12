@@ -1,12 +1,13 @@
 #include "romea_joy/joystick_trigger.hpp"
-
 namespace romea
 {
 
 //-----------------------------------------------------------------------------
-JoystickTrigger::JoystickTrigger(const int & axis_id):
+JoystickTrigger::JoystickTrigger(const int & axis_id,
+                                 const double & unpressed_value):
   JoystickAxis(axis_id),
-  has_been_pressed_(false)
+  has_been_pressed_(false),
+  unpressed_value_(unpressed_value)
 {
 
 }
@@ -23,7 +24,7 @@ void JoystickTrigger::update(const sensor_msgs::Joy & joy_msg)
     }
     else
     {
-      value_= 1;
+      value_= unpressed_value_;
     }
   }
 }

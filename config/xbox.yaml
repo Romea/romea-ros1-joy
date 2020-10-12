@@ -22,3 +22,8 @@ axes:
   triggers:
     LT: 2
     RT: 5
+deadzone: 0.05
+scale:
+  directional_pads: [-1.0, 1.0]
+  sticks: [-1.0, 1.0]
+  triggers: [1.0, -1.0]
