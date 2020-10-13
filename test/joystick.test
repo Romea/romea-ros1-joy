@@ -1,0 +1,9 @@
+<launch>
+
+  <test test-name="joystick_test"
+        pkg="romea_joy"
+        type="romea_joy_joystick_test">
+      <rosparam command="load" file="$(find romea_joy)/config/xbox.yaml"/>
+  </test>
+
+</launch>
