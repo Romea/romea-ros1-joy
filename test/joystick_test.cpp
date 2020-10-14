@@ -14,7 +14,10 @@ public :
     msg(),
     pub(),
     start(false),
-    stop(false)
+    stop(false),
+    start_button_value(-1),
+    stop_button_value(-1)
+
   {
 
   }
@@ -31,17 +34,33 @@ public :
     joy=std::make_unique<romea::Joystick>(nh,private_nh,remappings,true);
 
     joy->registerButtonCallback("start",
-                                     romea::JoystickButton::PRESSED,
-                                     std::bind(&TestJoystick::start_callback,this));
+                                romea::JoystickButton::PRESSED,
+                                std::bind(&TestJoystick::start_callback,this));
 
     joy->registerButtonCallback("stop",
-                                     romea::JoystickButton::RELEASED,
-                                     std::bind(&TestJoystick::stop_callback,this));
+                                romea::JoystickButton::RELEASED,
+                                std::bind(&TestJoystick::stop_callback,this));
+
+    joy->registerOnReceivedMsgCallback(std::bind(&TestJoystick::joystick_callback,this,std::placeholders::_1));
+
     msg.axes.resize(8);
     msg.buttons.resize(11);
     pub= nh.advertise<sensor_msgs::Joy>("joy",0);
   }
 
+  void publish_joy_msg_and_wait()
+  {
+    pub.publish(msg);
+    ros::spinOnce();
+    ros::Duration(0.1).sleep();
+    ros::spinOnce();
+  }
+
+  void joystick_callback(const romea::Joystick & joy)
+  {
+    start_button_value=joy.getButtonValue("start");
+    stop_button_value=joy.getButtonValue("stop");
+  }
 
   void start_callback()
   {
@@ -58,6 +77,8 @@ public :
   ros::Publisher pub;
   bool start;
   bool stop;
+  int start_button_value;
+  int stop_button_value;
 
 };
 
@@ -65,14 +86,17 @@ public :
 TEST_F(TestJoystick, testPressedStartButton)
 {
   msg.buttons[0]=0;
-  pub.publish(msg);
-  ros::spinOnce();
+  msg.buttons[1]=0;
+  publish_joy_msg_and_wait();
+  EXPECT_EQ(start_button_value,0);
+  EXPECT_EQ(stop_button_value,0);
   EXPECT_FALSE(start);
   EXPECT_FALSE(stop);
 
   msg.buttons[0]=1;
-  pub.publish(msg);
-  ros::spinOnce();
+  publish_joy_msg_and_wait();
+  EXPECT_EQ(start_button_value,1);
+  EXPECT_EQ(stop_button_value,0);
   EXPECT_TRUE(start);
   EXPECT_FALSE(stop);
 }
@@ -80,15 +104,22 @@ TEST_F(TestJoystick, testPressedStartButton)
 //-----------------------------------------------------------------------------
 TEST_F(TestJoystick, testReleasedStopButton)
 {
+  ROS_ERROR_STREAM("testReleasedStopButton");
+
+  msg.buttons[0]=0;
   msg.buttons[1]=1;
-  pub.publish(msg);
-  ros::spinOnce();
+  publish_joy_msg_and_wait();
+  EXPECT_EQ(start_button_value,0);
+  EXPECT_EQ(stop_button_value,1);
   EXPECT_FALSE(start);
   EXPECT_FALSE(stop);
 
+  ROS_ERROR_STREAM("testReleasedStopButton");
+
   msg.buttons[1]=0;
-  pub.publish(msg);
-  ros::spinOnce();
+  publish_joy_msg_and_wait();
+  EXPECT_EQ(start_button_value,0);
+  EXPECT_EQ(stop_button_value,0);
   EXPECT_FALSE(start);
   EXPECT_TRUE(stop);
 }
