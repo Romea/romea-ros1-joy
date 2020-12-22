@@ -114,7 +114,19 @@ void Joystick::registerButtonCallback(const std::string & button_name,
                                       const JoystickButton::Event & event_type,
                                       JoystickButton::CallbackFunction &&callback)
 {
-  buttons_.at(button_name)->registerCallback(event_type,std::move(callback));
+  auto it = buttons_.find(button_name);
+  if(it == buttons_.end())
+  {
+    std::stringstream ss;
+    ss << "No joystick button called ";
+    ss << button_name;
+    ss << " has been found, register ";
+    ss << button_name;
+    ss << " callback failed. Check joystick buttons mappings or remappings ";
+    throw(std::runtime_error(ss.str()));
+  }
+
+  it->second->registerCallback(event_type,std::move(callback));
 }
 
 //-----------------------------------------------------------------------------
