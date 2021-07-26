@@ -3,7 +3,7 @@
 #include "romea_joy/joystick_trigger.hpp"
 #include "romea_joy/joystick_directional_pad.hpp"
 #include "romea_joy/joystick_mapping.hpp"
-#include <romea_common_utils/params/RosParam.hpp>
+#include <romea_common_utils/params/ros_param.hpp>
 
 namespace romea
 {
