@@ -26,7 +26,7 @@ JoystickMapping::JoystickMapping(ros::NodeHandle & joy_nh,
 //-----------------------------------------------------------------------------
 std::map<std::string,int> JoystickMapping::get(const std::string & mappings_name)
 {
-  std::map<std::string,int> id_mappings = loadMap<int>(joy_nh_,mappings_name);
+  std::map<std::string,int> id_mappings = load_map<int>(joy_nh_,mappings_name);
   if(name_remappings_.size()==0)
     return id_mappings;
 

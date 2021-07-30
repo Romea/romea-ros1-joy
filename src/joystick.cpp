@@ -9,7 +9,7 @@ namespace romea
 {
   JoystickStick::Config loadSticksConfiguration(ros::NodeHandle nh, const std::string paramName)
   {
-    std::vector<double> interval =loadVector<double>(nh,paramName);
+    std::vector<double> interval =load_vector<double>(nh,paramName);
     if(interval.size()!=2)
     {
       throw(std::runtime_error("Unable load sticks configuration from ros parameter " + paramName));
@@ -19,7 +19,7 @@ namespace romea
 
   JoystickTrigger::Config loadTriggersConfiguration(ros::NodeHandle nh, const std::string paramName)
   {
-    std::vector<double> interval =loadVector<double>(nh,paramName);
+    std::vector<double> interval =load_vector<double>(nh,paramName);
     if(interval.size()!=2)
     {
       throw(std::runtime_error("Unable load triggers configuration from ros parameter " + paramName));
@@ -54,7 +54,7 @@ Joystick::Joystick(ros::NodeHandle & nh,
   sticks_configuration_(),
   triggers_configuration_()
 {
-  double deadzone = loadParam<double>(joy_nh,"deadzone");
+  double deadzone = load_param<double>(joy_nh,"deadzone");
   sticks_configuration_=loadSticksConfiguration(joy_nh,"scale/sticks");
   triggers_configuration_=loadTriggersConfiguration(joy_nh,"scale/triggers");
 
