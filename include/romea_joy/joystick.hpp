@@ -8,6 +8,9 @@
 #include "joystick_button.hpp"
 #include "joystick_stick.hpp"
 #include "joystick_trigger.hpp"
+#include "joystick_directional_pad.hpp"
+#include "joystick_mapping.hpp"
+
 
 //std
 #include <functional>
@@ -48,10 +51,10 @@ public :
 
 private :
 
-  void addButtons_(const std::map<std::string, int> &id_mappings);
-  void addDirectionalPads_(const std::map<std::string,int> & id_mappings);
-  void addSticks_(const std::map<std::string, int> &id_mappings, const double & deadzone);
-  void addTriggers_(const std::map<std::string,int> & id_mappings, const double & unpressed_value);
+  void addButtons_(ros::NodeHandle & joy_nh, const JoystickMapping & joystick_mapping);
+  void addDirectionalPads_(ros::NodeHandle &joy_nh, const JoystickMapping & joystick_mapping);
+  void addSticks_(ros::NodeHandle &joy_nh, const JoystickMapping & joystick_mapping);
+  void addTriggers_(ros::NodeHandle &joy_nh, const JoystickMapping & joystick_mapping);
 
   void processJoyMsg_(const sensor_msgs::Joy::ConstPtr & msg);
 

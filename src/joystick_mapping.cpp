@@ -5,30 +5,16 @@ namespace romea
 {
 
 //-----------------------------------------------------------------------------
-JoystickMapping::JoystickMapping(ros::NodeHandle & joy_nh):
-  joy_nh_(joy_nh),
-  name_remappings_(),
-  keep_only_remapped_ones_(true)
-{
-
-}
-
-//-----------------------------------------------------------------------------
-JoystickMapping::JoystickMapping(ros::NodeHandle & joy_nh,
-                                 const std::map<std::string,std::string> & name_remappings,
+JoystickMapping::JoystickMapping(const StringToStringMap &name_remappings,
                                  const bool & keep_only_remapped_ones):
-  joy_nh_(joy_nh),
   name_remappings_(name_remappings),
   keep_only_remapped_ones_(keep_only_remapped_ones)
 {
 }
 
 //-----------------------------------------------------------------------------
-std::map<std::string,int> JoystickMapping::get(const std::string & mappings_name)
+JoystickMapping::StringToId JoystickMapping::get(const StringToId &id_mappings)const
 {
-  std::map<std::string,int> id_mappings = load_map<int>(joy_nh_,mappings_name);
-  if(name_remappings_.size()==0)
-    return id_mappings;
 
   std::map<std::string,int> result;
   for(const auto & id_map : id_mappings)

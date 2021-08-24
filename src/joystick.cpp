@@ -1,31 +1,27 @@
 #include "romea_joy/joystick.hpp"
-#include "romea_joy/joystick_stick.hpp"
-#include "romea_joy/joystick_trigger.hpp"
-#include "romea_joy/joystick_directional_pad.hpp"
-#include "romea_joy/joystick_mapping.hpp"
 #include <romea_common_utils/params/ros_param.hpp>
 
 namespace romea
 {
-  JoystickStick::Config loadSticksConfiguration(ros::NodeHandle nh, const std::string paramName)
+JoystickStick::Config loadSticksConfiguration(ros::NodeHandle nh, const std::string paramName)
+{
+  std::vector<double> interval =load_vector<double>(nh,paramName);
+  if(interval.size()!=2)
   {
-    std::vector<double> interval =load_vector<double>(nh,paramName);
-    if(interval.size()!=2)
-    {
-      throw(std::runtime_error("Unable load sticks configuration from ros parameter " + paramName));
-    }
-    return {interval[0],interval[1]};
+    throw(std::runtime_error("Unable load sticks configuration from ros parameter " + paramName));
   }
+  return {interval[0],interval[1]};
+}
 
-  JoystickTrigger::Config loadTriggersConfiguration(ros::NodeHandle nh, const std::string paramName)
+JoystickTrigger::Config loadTriggersConfiguration(ros::NodeHandle nh, const std::string paramName)
+{
+  std::vector<double> interval =load_vector<double>(nh,paramName);
+  if(interval.size()!=2)
   {
-    std::vector<double> interval =load_vector<double>(nh,paramName);
-    if(interval.size()!=2)
-    {
-      throw(std::runtime_error("Unable load triggers configuration from ros parameter " + paramName));
-    }
-    return {interval[0],interval[1]};
+    throw(std::runtime_error("Unable load triggers configuration from ros parameter " + paramName));
   }
+  return {interval[0],interval[1]};
+}
 
 }
 
@@ -54,18 +50,16 @@ Joystick::Joystick(ros::NodeHandle & nh,
   sticks_configuration_(),
   triggers_configuration_()
 {
-  double deadzone = load_param<double>(joy_nh,"deadzone");
-  sticks_configuration_=loadSticksConfiguration(joy_nh,"scale/sticks");
-  triggers_configuration_=loadTriggersConfiguration(joy_nh,"scale/triggers");
 
-  JoystickMapping joystick_mapping(joy_nh,name_remappings,use_only_remapped);
-  addButtons_(joystick_mapping.get("buttons"));
-  addDirectionalPads_(joystick_mapping.get("axes/directional_pads"));
-  addSticks_(joystick_mapping.get("axes/sticks"),deadzone);
-  addTriggers_(joystick_mapping.get("axes/triggers"),
-               triggers_configuration_.unpressed_value);
+  JoystickMapping joystick_mapping(name_remappings,use_only_remapped);
+
+  addButtons_(joy_nh,joystick_mapping);
+  addDirectionalPads_(joy_nh,joystick_mapping);
+  addSticks_(joy_nh,joystick_mapping);
+  addTriggers_(joy_nh,joystick_mapping);
 
   joy_sub_=nh.subscribe<sensor_msgs::Joy>("joy", 1, &Joystick::processJoyMsg_,this);
+  ROS_ERROR_STREAM("joy_sub_.getTopic() "<<joy_sub_.getTopic());
 }
 
 //-----------------------------------------------------------------------------
@@ -137,39 +131,67 @@ void Joystick::registerOnReceivedMsgCallback(OnReceivedMsgCallback && callback)
 
 
 //-----------------------------------------------------------------------------
-void Joystick::addButtons_(const std::map<std::string,int> & id_mappings)
+void Joystick::addButtons_(ros::NodeHandle & joy_nh,
+                           const JoystickMapping & joystick_mapping)
 {
-  for(const auto & p : id_mappings)
+  auto mapping = load_map<int>(joy_nh,"buttons/mapping");
+
+  for(const auto & p : joystick_mapping.get(mapping))
   {
     buttons_[p.first]=std::make_unique<JoystickButton>(p.second);
   }
 }
 
 //-----------------------------------------------------------------------------
-void Joystick::addDirectionalPads_(const std::map<std::string, int> &id_mappings)
+void Joystick::addDirectionalPads_(ros::NodeHandle & joy_nh,
+                                   const JoystickMapping & joystick_mapping)
 {
-  for(const auto & p : id_mappings)
+  if(joy_nh.hasParam("axes/directional_pads"))
   {
-    axes_[p.first]=std::make_unique<JoystickDirectionalPad>(p.second);
+
+    auto mapping = load_map<int>(joy_nh,"axes/directional_pads/mapping");
+
+    for(const auto & p : joystick_mapping.get(mapping))
+    {
+      axes_[p.first]=std::make_unique<JoystickDirectionalPad>(p.second);
+    }
+
   }
 }
 //-----------------------------------------------------------------------------
-void Joystick::addSticks_(const std::map<std::string,int> & id_mappings,
-                          const double & deadzone)
+void Joystick::addSticks_(ros::NodeHandle & joy_nh,
+                          const JoystickMapping & joystick_mapping)
 {
-  for(const auto & p : id_mappings)
+  double deadzone = load_param<double>(joy_nh,"deadzone");
+
+  sticks_configuration_=loadSticksConfiguration(joy_nh,"axes/sticks/scale");
+
+  auto mapping = load_map<int>(joy_nh,"axes/sticks/mapping");
+
+  for(const auto & p : joystick_mapping.get(mapping))
   {
     axes_[p.first]=std::make_unique<JoystickStick>(p.second,deadzone);
   }
 
 }
 //-----------------------------------------------------------------------------
-void Joystick::addTriggers_(const std::map<std::string, int> &id_mappings,
-                            const double & unpressed_value)
+void Joystick::addTriggers_(ros::NodeHandle & joy_nh,
+                            const JoystickMapping & joystick_mapping)
 {
-  for(const auto & p : id_mappings)
+
+  if(joy_nh.hasParam("axes/triggers"))
   {
-    axes_[p.first]=std::make_unique<JoystickTrigger>(p.second,unpressed_value);
+
+    triggers_configuration_=loadTriggersConfiguration(joy_nh,"axes/triggers/scale");
+
+    std::map<std::string,int> mapping = load_map<int>(joy_nh,"axes/triggers/mapping");
+
+    for(const auto & p : joystick_mapping.get(mapping))
+    {
+      axes_[p.first]=std::make_unique<JoystickTrigger>(p.second,triggers_configuration_.unpressed_value);
+    }
+
+
   }
 }
 

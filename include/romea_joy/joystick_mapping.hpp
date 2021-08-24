@@ -18,18 +18,19 @@ class JoystickMapping
 
 public :
 
-  JoystickMapping(ros::NodeHandle & joy_nh);
+  using StringToStringMap = std::map<std::string,std::string>;
+  using StringToId = std::map<std::string,int>;
 
-  JoystickMapping(ros::NodeHandle & joy_nh,
-                  const std::map<std::string,std::string> & name_remappings,
+public :
+
+  JoystickMapping(const StringToStringMap & name_remappings,
                   const bool & keep_only_remapped_ones);
 
-  std::map<std::string,int> get(const std::string & mappings_name);
+  StringToId get(const StringToId &id_mappings) const;
 
 private :
 
-  ros::NodeHandle & joy_nh_;
-  std::map<std::string,std::string> name_remappings_;
+  StringToStringMap name_remappings_;
   bool keep_only_remapped_ones_;
 };
 }
