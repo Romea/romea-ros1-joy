@@ -108,8 +108,8 @@ void Joystick::registerButtonCallback(const std::string & button_name,
                                       const JoystickButton::Event & event_type,
                                       JoystickButton::CallbackFunction &&callback)
 {
-  auto it = buttons_.find(button_name);
-  if(it == buttons_.end())
+
+  if(auto it = buttons_.find(button_name);it == buttons_.end())
   {
     std::stringstream ss;
     ss << "No joystick button called ";
@@ -119,8 +119,11 @@ void Joystick::registerButtonCallback(const std::string & button_name,
     ss << " callback failed. Check joystick buttons mappings or remappings ";
     throw(std::runtime_error(ss.str()));
   }
+  else
+  {
+    it->second->registerCallback(event_type,std::move(callback));
+  }
 
-  it->second->registerCallback(event_type,std::move(callback));
 }
 
 //-----------------------------------------------------------------------------
@@ -136,10 +139,11 @@ void Joystick::addButtons_(ros::NodeHandle & joy_nh,
 {
   auto mapping = load_map<int>(joy_nh,"buttons/mapping");
 
-  for(const auto & p : joystick_mapping.get(mapping))
+  for(const auto & [buttom_name, button_id] : joystick_mapping.get(mapping))
   {
-    buttons_[p.first]=std::make_unique<JoystickButton>(p.second);
+    buttons_[buttom_name]=std::make_unique<JoystickButton>(button_id);
   }
+
 }
 
 //-----------------------------------------------------------------------------
@@ -151,9 +155,9 @@ void Joystick::addDirectionalPads_(ros::NodeHandle & joy_nh,
 
     auto mapping = load_map<int>(joy_nh,"axes/directional_pads/mapping");
 
-    for(const auto & p : joystick_mapping.get(mapping))
+    for(const auto & [axe_name,axe_id] : joystick_mapping.get(mapping))
     {
-      axes_[p.first]=std::make_unique<JoystickDirectionalPad>(p.second);
+      axes_[axe_name]=std::make_unique<JoystickDirectionalPad>(axe_id);
     }
 
   }
@@ -168,9 +172,9 @@ void Joystick::addSticks_(ros::NodeHandle & joy_nh,
 
   auto mapping = load_map<int>(joy_nh,"axes/sticks/mapping");
 
-  for(const auto & p : joystick_mapping.get(mapping))
+  for(const auto & [stick_name, stick_id] : joystick_mapping.get(mapping))
   {
-    axes_[p.first]=std::make_unique<JoystickStick>(p.second,deadzone);
+    axes_[stick_name]=std::make_unique<JoystickStick>(stick_id,deadzone);
   }
 
 }
@@ -186,12 +190,10 @@ void Joystick::addTriggers_(ros::NodeHandle & joy_nh,
 
     std::map<std::string,int> mapping = load_map<int>(joy_nh,"axes/triggers/mapping");
 
-    for(const auto & p : joystick_mapping.get(mapping))
+    for(const auto & [trigger_name,trigger_id] : joystick_mapping.get(mapping))
     {
-      axes_[p.first]=std::make_unique<JoystickTrigger>(p.second,triggers_configuration_.unpressed_value);
+      axes_[trigger_name]=std::make_unique<JoystickTrigger>(trigger_id,triggers_configuration_.unpressed_value);
     }
-
-
   }
 }
 

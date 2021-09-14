@@ -17,16 +17,15 @@ JoystickMapping::StringToId JoystickMapping::get(const StringToId &id_mappings)c
 {
 
   std::map<std::string,int> result;
-  for(const auto & id_map : id_mappings)
+  for(const auto & [name,id] : id_mappings)
   {
-    auto it=name_remappings_.find(id_map.first);
-    if(it!=name_remappings_.end())
+    if(auto it=name_remappings_.find(name);it!=name_remappings_.end())
     {
-      result[it->second]=id_map.second;
+      result[it->second]=id;
     }
     else if(!keep_only_remapped_ones_)
     {
-      result[id_map.first]=id_map.second;
+      result[name]=id;
     }
   }
 
