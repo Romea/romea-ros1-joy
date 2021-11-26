@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>romea_joy_bringup</name>
+  <version>0.0.0</version>
+  <description>The joy_bringup package</description>
+
+  <maintainer email="jean.laneurit@inrae.fr">Jean Laneurit</maintainer>
+  <author email="jean.laneurit@inrae.fr">Jean Laneurit</author>
+
+  <license>Todo</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+</package>

@@ -1,0 +1,36 @@
+<launch>
+
+   <arg name="mode"/>
+   <arg name="joy_name"/>
+   <arg name="joy_type"/>
+   <arg name="joy_device"/>
+   <arg name="autorepeat_rate"/>
+   <arg name="driver_pkg"/>
+
+    <rosparam command="load" file="$(find romea_joy)/config/$(arg joy_type).yaml" ns="$(arg joy_name)"/>
+
+    <group if="$(eval arg('mode') != 'replay')">
+
+        <group if="$(eval arg('driver_pkg') == 'joy')">
+
+           <node pkg="joy" type="joy_node" name="$(arg joy_name)">
+              <param name="dev" value="$(arg joy_device)"/>
+              <param name="autoreapeat_rate" value="$(arg autorepeat_rate)"/>
+           </node>
+
+        </group>
+
+        <group if="$(eval arg('driver_pkg') == 'ds4_driver')">
+
+           <node pkg="ds4_driver" type="ds4_driver_node.py" name="$(arg joy_name)">
+             <rosparam command="load" file="$(find ds4_driver)/config/params.yaml" />
+             <param name="device_addr" value="$(arg joy_device)" />
+             <param name="use_standard_msgs" value="true" />
+             <param name="autorepeat_rate" value="$(arg autorepeat_rate)"/>
+           </node>
+
+        </group>
+
+    </group>
+
+</launch>

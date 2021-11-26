@@ -1,0 +1,18 @@
+<launch>
+
+   <arg name="mode"/>
+   <arg name="joy_name" default="joystick"/>
+   <arg name="joy_device" default="/dev/input/js0"/>
+   <arg name="autorepeat_rate" default="20.0"/>
+   <arg name="driver_pkg" default="ds4_driver"/>
+
+   <include file="$(find romea_joy_bringup)/launch/common/joy_common.launch">
+      <arg name="mode" value="$(arg mode)"/>
+      <arg name="joy_name" value="$(arg joy_name)"/>
+      <arg name="joy_device" value="$(arg joy_device)"/>
+      <arg name="joy_type" value="dualshock4"/>
+      <arg name="autorepeat_rate" value="$(arg autorepeat_rate)"/>
+      <arg name="driver_pkg" value="$(arg driver_pkg)"/>
+   </include>
+
+</launch>
