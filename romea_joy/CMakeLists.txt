@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(${PROJECT_NAME}_CATKIN_DEPS roscpp sensor_msgs romea_common_utils)
 
 find_package(catkin COMPONENTS ${${PROJECT_NAME}_CATKIN_DEPS})
-find_package(romea_common REQUIRED)
+find_package(romea_core_common REQUIRED)
 
 ###################################
 ## catkin specific configuration ##
@@ -29,7 +29,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${romea_common_INCLUDE_DIRS})
+  ${romea_core_common_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   src/joystick.cpp
