@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+   <arg name="mode"/>
+   <arg name="robot_name"/>
+   <arg name="joy_name" default="joystick"/>
+
+   <rosparam command="load" file="$(find romea_joy)/config/hj60ss.yaml" ns="$(arg joy_name)"/>
+
+   <group if="$(eval arg('mode') != 'replay')">
+      <param name="/records/$(arg robot_name)/joystick/joy_topic" value="/joy"/>
+   </group>
+
+</launch>
