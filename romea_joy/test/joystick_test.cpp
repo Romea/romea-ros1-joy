@@ -104,7 +104,6 @@ TEST_F(TestJoystick, testPressedStartButton)
 //-----------------------------------------------------------------------------
 TEST_F(TestJoystick, testReleasedStopButton)
 {
-  ROS_ERROR_STREAM("testReleasedStopButton");
 
   msg.buttons[0]=0;
   msg.buttons[1]=1;
@@ -113,8 +112,6 @@ TEST_F(TestJoystick, testReleasedStopButton)
   EXPECT_EQ(stop_button_value,1);
   EXPECT_FALSE(start);
   EXPECT_FALSE(stop);
-
-  ROS_ERROR_STREAM("testReleasedStopButton");
 
   msg.buttons[1]=0;
   publish_joy_msg_and_wait();

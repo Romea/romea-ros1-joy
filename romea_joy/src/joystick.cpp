@@ -59,7 +59,6 @@ Joystick::Joystick(ros::NodeHandle & nh,
   addTriggers_(joy_nh,joystick_mapping);
 
   joy_sub_=nh.subscribe<sensor_msgs::Joy>("joy", 1, &Joystick::processJoyMsg_,this);
-  ROS_ERROR_STREAM("joy_sub_.getTopic() "<<joy_sub_.getTopic());
 }
 
 //-----------------------------------------------------------------------------
