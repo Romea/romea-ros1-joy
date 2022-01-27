@@ -1,5 +1,4 @@
 #include "romea_joy/joystick_mapping.hpp"
-#include <romea_common_utils/params/ros_param.hpp>
 
 namespace romea
 {
